@@ -1,7 +1,8 @@
 import numpy as np
 from load import get_values_sql, compressed2img, object2numeric_array
 
-file = '/Users/jote/Documents/Code/Python/DLR/aj-mopla/RobotPathData/SingleSphere02.db'
+file = '/Users/jote/Documents/Code/Python/RobotPathData/SingleSphere02.db'
+# TODO change to you own directory
 
 
 n_voxels = 64
@@ -28,9 +29,9 @@ end_images = compressed2img(img_cmp=paths.end_img_cmp.values, n_voxels=n_voxels,
 q_paths = object2numeric_array(paths.q_path.values)
 q_paths = q_paths.reshape(-1, n_waypoints, n_dim)
 
-# Plot and example
+# Plot an example
 i = 0
-i_world = np.asscalar(paths.i_world[i])
+i_world = paths.i_world[i]
 
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots()

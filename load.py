@@ -158,11 +158,14 @@ def df2sql(df, file, table='db', if_exists='fail', lock=None):
 def __decompress_values(value, col):
     # SQL saves everything in binary form -> convert back to numeric, expect the columns which are marked as CMP
     if isinstance(value[0], bytes) and col[-4:] != _CMP:
-        if col in ['i_world', 'i_sample',
-                   'n_obstacles', 'rectangle_pos', 'rectangle_position', 'rectangle_size']:
-            value = np.array([np.frombuffer(v, dtype=int) for v in value])
+        if col in ['i_world', 'i_sample', 'n_obstacles']:
+            value = np.array([np.frombuffer(v, dtype=int) for v in value], dtype=int)
+        elif col in ['rectangle_pos', 'rectangle_position', 'rectangle_size']:
+            value = np.array([np.frombuffer(v, dtype=int) for v in value], dtype=object)
         else:
             value = np.array([np.frombuffer(v, dtype=float) for v in value])
+        value = np.squeeze(value)
+
     return value
 
 
