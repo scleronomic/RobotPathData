@@ -1,8 +1,10 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from load import get_values_sql, compressed2img, object2numeric_array
 
 file = '/Users/jote/Documents/Code/Python/RobotPathData/SingleSphere02.db'
-# TODO change to you own directory
+# file = '/Users/jote/Documents/Code/Python/RobotPathData/StaticArm04.db'
+# TODO change to you own file path
 
 
 n_voxels = 64
@@ -33,7 +35,6 @@ q_paths = q_paths.reshape(-1, n_waypoints, n_dim)
 i = 0
 i_world = paths.i_world[i]
 
-import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
 
 ax.imshow(obstacle_images[i_world].T, origin='lower', extent=extent, cmap='binary',)
