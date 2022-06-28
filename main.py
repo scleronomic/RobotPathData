@@ -23,7 +23,8 @@ obstacle_images = compressed2img(img_cmp=worlds.obst_img_cmp.values, n_voxels=n_
 # 0...999     -> world 0
 # 1000...1999 -> world 1
 # 2000...2999 -> world 2
-paths = get_values_sql(file=file, table='paths', rows=[0, 1, 2, 1000, 2000])
+paths = get_values_sql(file=file, table='paths', rows=[0, 1, 2, 1000, 2000, 3500])
+print(paths.head())
 path_images = compressed2img(img_cmp=paths.path_img_cmp.values, n_voxels=n_voxels, n_dim=n_dim)
 start_images = compressed2img(img_cmp=paths.start_img_cmp.values, n_voxels=n_voxels, n_dim=n_dim)
 end_images = compressed2img(img_cmp=paths.end_img_cmp.values, n_voxels=n_voxels, n_dim=n_dim)
@@ -32,11 +33,10 @@ q_paths = object2numeric_array(paths.q_path.values)
 q_paths = q_paths.reshape(-1, n_waypoints, n_dim)
 
 # Plot an example
-i = 0
-i_world = paths.i_world[i]
+i = 5
+i_world = paths.i_world.values[i]
 
 fig, ax = plt.subplots()
-
 ax.imshow(obstacle_images[i_world].T, origin='lower', extent=extent, cmap='binary',)
 ax.imshow(start_images[i].T, origin='lower', extent=extent, cmap='Greens', alpha=0.4)
 ax.imshow(end_images[i].T, origin='lower', extent=extent, cmap='Reds', alpha=0.4)

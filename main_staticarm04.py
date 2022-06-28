@@ -19,13 +19,13 @@ n_worlds = 10000
 worlds = get_values_sql(file=file, table='worlds')
 obstacle_images = compressed2img(img_cmp=worlds.obst_img_cmp.values, n_voxels=n_voxels, n_dim=n_dim)
 
-paths = get_values_sql(file=file, table='paths', rows=[0, 1, 2, 1000, 2000])
+paths = get_values_sql(file=file, table='paths', rows=[0, 1, 2, 1000, 2000, 12345, 333333, 1000000])
 q_paths = object2numeric_array(paths.q_path.values)
 q_paths = q_paths.reshape(-1, n_waypoints, n_dof)
 
 # Plot an example
-i = 0
-i_world = paths.i_world[i]
+i = 5
+i_world = paths.i_world.values[i]
 
 
 def forward_kinematic(q):
@@ -45,11 +45,17 @@ def forward_kinematic(q):
 fig, ax = plt.subplots()
 ax.imshow(obstacle_images[i_world].T, origin='lower', extent=extent, cmap='binary')
 
-x = forward_kinematic(q_paths[0])
+x = forward_kinematic(q_paths[i])
 ax.plot(*x[0].T, color='green', marker='o', zorder=10)
 ax.plot(*x[-1].T, color='red', marker='o', zorder=10)
 h = ax.plot(*x[0].T, color='blue', marker='o', zorder=0)[0]
 
+
+plt.pause(1)
+input()
+plt.pause(1)
+
+
 for i in range(n_waypoints):
     h.set_data(x[i].T)
-    plt.pause(0.01)
+    plt.pause(0.1)
