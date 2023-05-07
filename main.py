@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from load import get_values_sql, compressed2img, object2numeric_array
 
-file = '/Users/jote/Documents/Code/Python/RobotPathData/SingleSphere02_all.db'
+file = '/Users/jote/Documents/Code/Python/RobotPathData/SingleSphere02.db'
 # file = '/Users/jote/Documents/Code/Python/RobotPathData/StaticArm04.db'
 # TODO change to you own file path
 
@@ -61,14 +61,13 @@ output_images = path_images[..., np.newaxis]
 # loss(output_images_pred, output_images) -> backprop
 
 
-
-fig, ax = plt.subplots()
-ax.imshow(input_images2[0, :, :, 0].T, origin='lower', extent=extent, cmap='binary')
-
-fig, ax = plt.subplots()
-ax.imshow(input_images[0, :, :, 0].T, origin='lower', extent=extent, cmap='binary')
-fig, ax = plt.subplots()
-ax.imshow(input_images[0, :, :, 1].T, origin='lower', extent=extent, cmap='binary')
+fig, ax = plt.subplots(ncols=3)
+ax[0].imshow(input_images3[0, :, :, 0].T, origin='lower', extent=extent, cmap='binary')
+ax[0].set_xlabel("start")
+ax[1].imshow(input_images3[0, :, :, 1].T, origin='lower', extent=extent, cmap='binary')
+ax[1].set_xlabel("end")
+ax[2].imshow(input_images3[0, :, :, 2].T, origin='lower', extent=extent, cmap='binary')
+ax[2].set_xlabel("obstacle")
 
 
 q_paths = object2numeric_array(paths.q_path.values)
