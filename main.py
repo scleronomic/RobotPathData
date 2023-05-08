@@ -28,9 +28,26 @@ batch_size = 32
 n_total = n_paths_per_world * n_worlds
 # batch_idx =     [0, 1, 2, 1000, 2000, 3500]
 path_idx_for_batch = np.random.choice(np.arange(n_total), size=batch_size, replace=False)
-path_idx_for_whole_dataset = np.arange(10000)
 
+path_idx_for_whole_dataset = np.arange(10000)
 paths = get_values_sql(file=file, table='paths', rows=path_idx_for_whole_dataset)
+
+
+print(paths.head())
+print(worlds.head())
+
+
+# TODO wings for life calculater
+# v_auto(t) = 7 + 0.5(t-1)
+# s_auto(t) = 7*t + sum_(0.5 + 1 + 1.5)
+
+# 0: 0
+# 1: 0.5
+# 2: 1.5
+# 3: 3
+# 4: 5
+# 5: 7.5
+# sum
 
 path_images = compressed2img(img_cmp=paths.path_img_cmp.values, n_voxels=n_voxels, n_dim=n_dim)
 start_images = compressed2img(img_cmp=paths.start_img_cmp.values, n_voxels=n_voxels, n_dim=n_dim)

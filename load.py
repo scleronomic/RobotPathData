@@ -163,7 +163,7 @@ def __decompress_values(value, col):
         elif "f32" in col:
             value = np.array([np.frombuffer(v, dtype=np.float32) for v in value], dtype=float)
         elif col in ['i_world', 'i_sample', 'n_obstacles']:
-            value = np.array([np.frombuffer(v, dtype=int) for v in value], dtype=int)
+            value = np.array([np.frombuffer(v, dtype=np.int64) for v in value], dtype=int)
         elif col in ['rectangle_pos', 'rectangle_position', 'rectangle_size']:
             value = np.array([np.frombuffer(v, dtype=int) for v in value], dtype=object)
         else:
