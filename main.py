@@ -1,9 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from load import get_values_sql, compressed2img, object2numeric_array
 
-file = '/Users/jote/Documents/Code/Python/RobotPathData/SingleSphere02.db'
-# file = '/Users/jote/Documents/Code/Python/RobotPathData/StaticArm04.db'
+from wzk import sql2, trajectory
+import matplotlib.pyplot as plt
+
+file = "/Users/jote/Documents/Code/Python/RobotPathData/SingleSphere02.db"
+# file = "/Users/jote/Documents/Code/Python/RobotPathData/StaticArm04.db"
 # TODO change to you own file path
 
 
@@ -15,9 +16,10 @@ n_dim = 2
 n_paths_per_world = 1000
 n_worlds = 5000
 
+sql2.summary(file)
 
-worlds = get_values_sql(file=file, table='worlds')
-obstacle_images = compressed2img(img_cmp=worlds.obst_img_cmp.values, n_voxels=n_voxels, n_dim=n_dim)
+worlds = sql2.get_values_sql(file=file, table="worlds", values_only=False)
+obstacle_images = sql2.compressed2img(img_cmp=worlds.img_cmp.values, shape=(n_voxels, n_voxels), dtype=bool)
 
 # always 1000 paths belong to one world
 # 0...999     -> world 0
@@ -30,30 +32,17 @@ n_total = n_paths_per_world * n_worlds
 path_idx_for_batch = np.random.choice(np.arange(n_total), size=batch_size, replace=False)
 
 path_idx_for_whole_dataset = np.arange(10000)
-paths = get_values_sql(file=file, table='paths', rows=path_idx_for_whole_dataset)
+paths = sql2.get_values_sql(file=file, table="paths", rows=path_idx_for_whole_dataset, values_only=False)
 
 
 print(paths.head())
 print(worlds.head())
 
+path_images = sql2.compressed2img(img_cmp=paths.pathimg_cmp.values, shape=(n_voxels, n_voxels), dtype=bool)
+start_images = sql2.compressed2img(img_cmp=paths.startimg_cmp.values, shape=(n_voxels, n_voxels), dtype=bool)
+end_images = sql2.compressed2img(img_cmp=paths.endimg_cmp.values, shape=(n_voxels, n_voxels), dtype=bool)
 
-# TODO wings for life calculater
-# v_auto(t) = 7 + 0.5(t-1)
-# s_auto(t) = 7*t + sum_(0.5 + 1 + 1.5)
-
-# 0: 0
-# 1: 0.5
-# 2: 1.5
-# 3: 3
-# 4: 5
-# 5: 7.5
-# sum
-
-path_images = compressed2img(img_cmp=paths.path_img_cmp.values, n_voxels=n_voxels, n_dim=n_dim)
-start_images = compressed2img(img_cmp=paths.start_img_cmp.values, n_voxels=n_voxels, n_dim=n_dim)
-end_images = compressed2img(img_cmp=paths.end_img_cmp.values, n_voxels=n_voxels, n_dim=n_dim)
-
-batch_i_world = object2numeric_array(paths.i_world.values)
+batch_i_world = paths.world_i32.values
 obstacle_images_batch = obstacle_images[batch_i_world]
 
 
@@ -79,26 +68,33 @@ output_images = path_images[..., np.newaxis]
 
 
 fig, ax = plt.subplots(ncols=3)
-ax[0].imshow(input_images3[0, :, :, 0].T, origin='lower', extent=extent, cmap='binary')
+ax[0].imshow(input_images3[0, :, :, 0].T, origin="lower", extent=extent, cmap="binary")
 ax[0].set_xlabel("start")
-ax[1].imshow(input_images3[0, :, :, 1].T, origin='lower', extent=extent, cmap='binary')
+ax[1].imshow(input_images3[0, :, :, 1].T, origin="lower", extent=extent, cmap="binary")
 ax[1].set_xlabel("end")
-ax[2].imshow(input_images3[0, :, :, 2].T, origin='lower', extent=extent, cmap='binary')
+ax[2].imshow(input_images3[0, :, :, 2].T, origin="lower", extent=extent, cmap="binary")
 ax[2].set_xlabel("obstacle")
 
 
-q_paths = object2numeric_array(paths.q_path.values)
-q_paths = q_paths.reshape(-1, n_waypoints, n_dim)
+q = sql2.object2numeric_array(paths.q_f32.values)
+q = q.reshape(-1, n_waypoints, n_dim)
 
 # Plot an example
 i = 5
-i_world = paths.i_world.values[i]
+i_world = paths.world_i32.values[i]
 
 fig, ax = plt.subplots()
-ax.imshow(obstacle_images[i_world].T, origin='lower', extent=extent, cmap='binary')
-ax.imshow(start_images[i].T, origin='lower', extent=extent, cmap='Greens', alpha=0.4)
-ax.imshow(end_images[i].T, origin='lower', extent=extent, cmap='Reds', alpha=0.4)
-ax.imshow(path_images[i].T, origin='lower', extent=extent, cmap='Blues', alpha=0.2)
+ax.imshow(obstacle_images[i_world].T, origin="lower", extent=extent, cmap="binary")
+ax.imshow(start_images[i].T, origin="lower", extent=extent, cmap="Greens", alpha=0.4)
+ax.imshow(end_images[i].T, origin="lower", extent=extent, cmap="Reds", alpha=0.4)
+ax.imshow(path_images[i].T, origin="lower", extent=extent, cmap="Blues", alpha=0.2)
 
-ax.plot(*q_paths[i].T, color='k', marker='o')
+ax.plot(*q[i].T, color="k", marker="o")
 plt.show()
+
+# adjust trajectory length
+q_n32 = trajectory.get_path_adjusted(q[:100], n=32)
+fig, ax = plt.subplots()
+ax.plot(*q_n32[0].T, marker="o", color="blue", alpha=0.5, label="n_wp=32")
+ax.plot(*q[0].T, marker="o", color="red", alpha=0.5, label="n_wp=20")
+ax.legend()
