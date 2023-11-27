@@ -42,10 +42,6 @@ obstacle_images_batch = obstacle_images[batch_i_world]
 q_paths = sql2.object2numeric_array(paths.q_f32.values)
 q_paths = q_paths.reshape(-1, n_waypoints, n_dim)
 
-# Plot an example
-# i0 = 5442
-# i1 = 5443
-
 i0 = 100
 i1 = 1
 
@@ -82,7 +78,7 @@ fig, ax = plt.subplots()
 ax.plot(*q_end.T, marker="o", ls="")
 
 
-# adjust trajectory length
+# Adjust trajectory length
 q_n32 = trajectory.get_path_adjusted(q[:100], n=32)
 fig, ax = plt.subplots()
 ax.plot(*q_n32[0].T, marker="o", color="blue", alpha=0.5, label="n_wp=32")

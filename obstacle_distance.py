@@ -4,10 +4,6 @@ import scipy.ndimage as ndimage
 from wzk import np2, grid
 
 
-# TODO Right now I am calculating to the grid centers. That’s the reason it looks kinda wrong by half the pixel size
-#   Does not really matter for the pure simulation part. But There might be an offset compared to the Kinect Fusion Map
-
-
 # Occupancy Image to Distance Image
 def img2dist_img(img: np.ndarray, voxel_size: float, add_boundary: bool = True) -> np.ndarray:
     """

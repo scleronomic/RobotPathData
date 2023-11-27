@@ -18,7 +18,7 @@ n_worlds = 5000
 
 sql2.summary(file)
 
-worlds = sql2.get_values_sql(file=file, table="worlds", values_only=False)
+worlds = sql2.get_values_sql(file=file, table="worlds", return_type="df")
 obstacle_images = sql2.compressed2img(img_cmp=worlds.img_cmp.values, shape=(n_voxels, n_voxels), dtype=bool)
 
 # always 1000 paths belong to one world
@@ -32,7 +32,7 @@ n_total = n_paths_per_world * n_worlds
 path_idx_for_batch = np.random.choice(np.arange(n_total), size=batch_size, replace=False)
 
 path_idx_for_whole_dataset = np.arange(10000)
-paths = sql2.get_values_sql(file=file, table="paths", rows=path_idx_for_whole_dataset, values_only=False)
+paths = sql2.get_values_sql(file=file, table="paths", rows=path_idx_for_whole_dataset, return_type="df")
 
 
 print(paths.head())
@@ -80,8 +80,11 @@ q = sql2.object2numeric_array(paths.q_f32.values)
 q = q.reshape(-1, n_waypoints, n_dim)
 
 # Plot an example
-i = 5
+i = 2017
+# i_world = paths.world_i32.values[i]
 i_world = paths.world_i32.values[i]
+print(i_world)
+i_world = 2
 
 fig, ax = plt.subplots()
 ax.imshow(obstacle_images[i_world].T, origin="lower", extent=extent, cmap="binary")
