@@ -198,9 +198,10 @@ def tries():
     img[3:5, 5:8] = 1
     img[range(20), range(20)] = 1
 
-    dist_img = img2dist_img(img=img, voxel_size=voxel_size, add_boundary=False)
+    dimg = img2dist_img(img=img, voxel_size=voxel_size, add_boundary=False)
+    fun = img2interpolation_fun(img=dimg, limits=limits, order=0)
 
-    fun = img2interpolation_fun(img=dist_img, limits=limits, order=0)
+
     x = np.array(np.meshgrid(*[np.linspace(limits[i, 0], limits[i, 1], 201) for i in range(2)], indexing="ij"))
     x = x.reshape(2, -1).T
     d = fun(x)
@@ -210,10 +211,9 @@ def tries():
     eps = 0.01
     mpl2.imshow(ax=ax, limits=limits, img=img, mask=~img, cmap="k")
     ax.plot(*x[d < eps].T, marker="o", color="red", ls="", markersize=1)
-    ax.plot(*x[d > eps].T, marker="o", color="blue", ls="", markersize=1)
+    ax.plot(*x[d >= eps].T, marker="o", color="blue", ls="", markersize=1)
 
     #
-    dimg = img2dist_img(img=img, voxel_size=voxel_size, )
     dimg_grad = img2grad(img=dimg, voxel_size=voxel_size)
     fig, ax = mpl2.new_fig(aspect=1, n_cols=4)
 

@@ -14,4 +14,4 @@ Until a better solution with GitHub/GCP is found, the data itself lies on Google
 * [rokin](https://github.com/scleronomic/rokin) [Only necessary if working with robotic arms and 3D data for the 
   visualization. 
 Automatically installs wzk]:   
-`pip install git+ssh://git@github.com/scleronomic/wzk.git@stable1.10`
+`pip install git+ssh://git@github.com/scleronomic/rokin.git@stable1.10`
