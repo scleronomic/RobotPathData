@@ -2,8 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from wzk import sql2
+from rokin import robots, vis
 
-file = "/Users/jote/Documents/Code/Python/RobotPathData/StaticArm04.db"
+
+file = "/Users/jote/Documents/code/python/misc2/RobotPathData/JustinArm07.db"
 # TODO change to you own file path
 
 # TODO update db file to new format
@@ -20,11 +22,11 @@ n_dof = 4
 n_worlds = 10000
 # n_paths_per_world = ? varies
 
-worlds = sql2.get_values_sql(file=file, table="worlds", values_only=False)
+worlds = sql2.get_values_sql(file=file, table="worlds", return_type="df")
 obstacle_images = sql2.compressed2img(img_cmp=worlds.obst_img_cmp.values, shape=(n_voxels, n_voxels), dtype=bool)
 
 paths = sql2.get_values_sql(file=file, table="paths",
-                            rows=[0, 1, 2, 1000, 2000, 12345, 333333, 1000000], values_only=False)
+                            rows=[0, 1, 2, 1000, 2000, 12345, 333333, 1000000], return_type="df")
 q_paths = sql2.object2numeric_array(paths.q_path.values)
 q_paths = q_paths.reshape(-1, n_waypoints, n_dof)
 

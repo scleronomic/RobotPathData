@@ -3,7 +3,7 @@ import numpy as np
 from wzk import sql2, trajectory
 import matplotlib.pyplot as plt
 
-file = "/Users/jote/Documents/Code/Python/RobotPathData/SingleSphere02.db"
+file = "/Users/jote/Documents/code/python/misc2/RobotPathData/SingleSphere02.db"
 # file = "/Users/jote/Documents/Code/Python/RobotPathData/StaticArm04.db"
 # TODO change to you own file path
 
@@ -96,7 +96,7 @@ ax.plot(*q[i].T, color="k", marker="o")
 plt.show()
 
 # adjust trajectory length
-q_n32 = trajectory.get_path_adjusted(q[:100], n=32)
+q_n32 = trajectory.get_path_adjusted(q[:100], n=1000)
 fig, ax = plt.subplots()
 ax.plot(*q_n32[0].T, marker="o", color="blue", alpha=0.5, label="n_wp=32")
 ax.plot(*q[0].T, marker="o", color="red", alpha=0.5, label="n_wp=20")

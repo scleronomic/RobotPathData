@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 from wzk import sql2, trajectory
 
 
-file = '/Users/jote/Documents/Code/Python/RobotPathData/SingleSphere02_all.db'
-file = '/Users/jote/Documents/Code/Python/RobotPathData/SingleSphere02_one-world.db'
+file = '/Users/jote/Documents/code/python/misc2/RobotPathData/SingleSphere02_all.db'
+# file = '/Users/jote/Documents/Code/Python/RobotPathData/SingleSphere02_one-world.db'
 # TODO change to you own file path
 
 
@@ -18,7 +18,7 @@ n_paths_per_world = 1000
 n_worlds = 5000
 
 
-worlds = sql2.get_values_sql(file=file, table="worlds", values_only=False)
+worlds = sql2.get_values_sql(file=file, table="worlds", return_type="df")
 print(worlds.head())
 obstacle_images = sql2.compressed2img(img_cmp=worlds.img_cmp.values, shape=(n_voxels, n_voxels), dtype=bool)
 
@@ -33,7 +33,7 @@ n_total = n_paths_per_world * n_worlds
 path_idx_for_batch = np.random.choice(np.arange(n_total), size=batch_size, replace=False)
 path_idx_for_whole_dataset = np.arange(10000)
 
-paths = sql2.get_values_sql(file=file, table='paths', rows=path_idx_for_whole_dataset, values_only=False)
+paths = sql2.get_values_sql(file=file, table='paths', rows=path_idx_for_whole_dataset, return_type="df")
 print(paths.head())
 
 batch_i_world = paths.world_i32.values
@@ -48,16 +48,25 @@ i1 = 1
 i_world0 = paths.world_i32.values[i0]
 i_world1 = paths.world_i32.values[i1]
 
+fix, ax = plt.subplots()
+ax.plot(paths.world_i32.values)
+
+
+
+# ax.plot(*q_paths[i0].T, color='red', marker='o')
+
+
+i_w = 5
+i_s = 5
+ii = np.nonzero(np.logical_and(paths.world_i32.values == i_w, paths.sample_i32.values == i_s))[0]
+
 fig, ax = plt.subplots()
-ax.imshow(obstacle_images[i_world0].T, origin='lower', extent=extent, cmap='binary')
-
-ax.plot(*q_paths[i0].T, color='red', marker='o')
-for i in range(1, 1000):
-    ax.plot(*q_paths[i0+i].T, color='blue', marker='o')
-# plt.show()
+ax.imshow(obstacle_images[i_w].T, origin='lower', extent=extent, cmap='binary')
+for i in ii:
+    ax.plot(*q_paths[i].T, color='blue', marker='o')
 
 
-q = sql2.get_values_sql(file=file, table="paths", columns="q_f32", values_only=True)
+q = sql2.get_values_sql(file=file, table="paths", columns="q_f32")
 
 q = q.reshape(-1, 20, 2)
 q_start = q[:, 0, :]
