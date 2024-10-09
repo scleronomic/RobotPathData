@@ -2,13 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from wzk import sql2
-from rokin import robots, vis
 
-
-file = "/Users/jote/Documents/code/python/misc2/RobotPathData/JustinArm07.db"
-# TODO change to you own file path
-
-# TODO update db file to new format
+file = "/Users/jote/Documents/code/python/misc2/RobotPathData/data/StaticArm04_2.db"  # download and update file path
 sql2.summary(file=file)
 
 
@@ -19,20 +14,18 @@ limb_length = 0.25  # m
 n_waypoints = 20  # start + 20 inner points + end
 n_dim = 2
 n_dof = 4
-n_worlds = 10000
-# n_paths_per_world = ? varies
+n_paths = sql2.get_n_rows(file=file, table="paths")
+n_worlds = sql2.get_n_rows(file=file, table="worlds")
 
-worlds = sql2.get_values_sql(file=file, table="worlds", return_type="df")
-obstacle_images = sql2.compressed2img(img_cmp=worlds.obst_img_cmp.values, shape=(n_voxels, n_voxels), dtype=bool)
+worlds = sql2.get_values(file=file, table="worlds", columns="img_cmp")
+worlds = sql2.compressed2img(img_cmp=worlds, shape=(n_voxels, n_voxels), dtype=bool)
 
-paths = sql2.get_values_sql(file=file, table="paths",
-                            rows=[0, 1, 2, 1000, 2000, 12345, 333333, 1000000], return_type="df")
-q_paths = sql2.object2numeric_array(paths.q_path.values)
-q_paths = q_paths.reshape(-1, n_waypoints, n_dof)
+rows = np.arange(100000)
+i_world, q = sql2.get_values(file=file, table="paths", rows=rows, columns=["world_i32", "q_f32"])
+q = q.reshape(-1, n_waypoints, n_dof)
 
-# Plot an example
-i = 5
-i_world = paths.i_world.values[i]
+fig, ax = plt.subplots()
+ax.plot(i_world)
 
 
 def forward_kinematic(q):
@@ -48,21 +41,34 @@ def forward_kinematic(q):
     return x
 
 
-# Plot an example
-fig, ax = plt.subplots()
-ax.imshow(obstacle_images[i_world].T, origin="lower", extent=extent, cmap="binary")
+# plot all start positions of one world
+i_w = 6
 
-x = forward_kinematic(q_paths[i])
+fig, ax = plt.subplots()
+ax.imshow(worlds[i_w].T, origin='lower', extent=extent, cmap='binary')
+
+i_w = np.nonzero(i_world == i_w)[0]
+for j in i_w:
+    x = forward_kinematic(q[j])
+    ax.plot(*x[0].T, color="blue", ls="-", alpha=0.5, marker="o")
+
+
+# Plot and animate an example
+i = 5
+fig, ax = plt.subplots()
+
+x = forward_kinematic(q[i])
 ax.plot(*x[0].T, color="green", marker="o", zorder=10)
 ax.plot(*x[-1].T, color="red", marker="o", zorder=10)
-h = ax.plot(*x[0].T, color="blue", marker="o", zorder=0)[0]
+h = ax.plot(*x[0].T, color="blue", marker="o", zorder=20)[0]
 
+ax.imshow(worlds[i_world[i]].T, origin="lower", extent=extent, cmap="binary")
 
 plt.pause(1)
 input()
 plt.pause(1)
 
 
-for i in range(n_waypoints):
-    h.set_data(x[i].T)
+for t in range(n_waypoints):
+    h.set_data(*x[t].T)
     plt.pause(0.1)

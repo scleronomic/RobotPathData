@@ -189,6 +189,11 @@ def img_grad2interpolation_fun(img_grad, limits, order=1, mode="nearest"):
     return fun_grad
 
 
+def robot_env_dist(q, robot, dist_fun):
+    x_spheres = robot.get_spheres(q=q)
+    return dist_fun(x=x_spheres) - robot.spheres.r
+
+
 def tries():
     limits = np.array([[-1, 2],
                        [-1, 2]])
