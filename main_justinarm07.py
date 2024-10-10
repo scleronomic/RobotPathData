@@ -4,7 +4,7 @@ from wzk import sql2, mpl2
 from rokin import robots, vis
 
 file = "/Users/jote/Documents/code/python/misc2/RobotPathData/data/JustinArm07.db"
-# TODO change to you own file path
+# change to your own file path
 
 sql2.summary(file)
 
